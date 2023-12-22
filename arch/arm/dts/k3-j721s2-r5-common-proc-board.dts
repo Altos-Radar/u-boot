@@ -13,7 +13,7 @@
 / {
 	chosen {
 		firmware-loader = &fs_loader0;
-		stdout-path = &main_uart8;
+		stdout-path = &main_uart5;
 		tick-timer = &timer1;
 	};
 
@@ -99,12 +99,26 @@
 };
 
 &main_pmx0 {
+	main_uart3_pins_default: main-uart3-pins-default {
+		pinctrl-single,pins = <
+			J721S2_IOPAD(0x078, PIN_INPUT, 11) /* (Y25) MCAN_RX.UART3_RXD */
+			J721S2_IOPAD(0x074, PIN_OUTPUT, 11) /* (R28) MCAN_TX.UART3_TXD */
+		>;
+    };
+
 	main_uart8_pins_default: main-uart8-pins-default {
 		pinctrl-single,pins = <
 			J721S2_IOPAD(0x040, PIN_INPUT, 14) /* (AC28) MCASP0_AXR0.UART8_CTSn */
 			J721S2_IOPAD(0x044, PIN_OUTPUT, 14) /* (Y26) MCASP0_AXR1.UART8_RTSn */
 			J721S2_IOPAD(0x0d0, PIN_INPUT, 11) /* (AF26) SPI0_CS1.UART8_RXD */
 			J721S2_IOPAD(0x0d4, PIN_OUTPUT, 11) /* (AH27) SPI0_CLK.UART8_TXD */
+		>;
+	};
+
+	main_uart5_pins_default: main-uart5-pins-default {
+		pinctrl-single,pins = <
+			J721S2_IOPAD(0x008, PIN_INPUT, 11) /* (AC24) MCAN12_RX.UART5_RXD */
+			J721S2_IOPAD(0x004, PIN_OUTPUT, 11) /* (W25) MCAN12_TX.UART5_TXD */
 		>;
 	};
 
@@ -193,10 +207,21 @@
 	pinctrl-0 = <&mcu_uart0_pins_default>;
 };
 
+&main_uart3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&main_uart3_pins_default>;
+};
+
 &main_uart8 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&main_uart8_pins_default>;
 };
+
+&main_uart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&main_uart5_pins_default>;
+};
+
 
 &main_sdhci0 {
 	/delete-property/ power-domains;
