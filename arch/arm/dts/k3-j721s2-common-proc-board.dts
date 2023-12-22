@@ -22,7 +22,7 @@
 	};
 
 	aliases {
-		serial2 = &main_uart8;
+		serial2 = &main_uart5;
 		mmc0 = &main_sdhci0;
 		mmc1 = &main_sdhci1;
 		can0 = &main_mcan16;
@@ -111,12 +111,26 @@
 };
 
 &main_pmx0 {
+	main_uart3_pins_default: main-uart3-pins-default {
+		pinctrl-single,pins = <
+			J721S2_IOPAD(0x078, PIN_INPUT, 11) /* (Y25) MCAN_RX.UART3_RXD */
+			J721S2_IOPAD(0x074, PIN_OUTPUT, 11) /* (R28) MCAN_TX.UART3_TXD */
+		>;
+    };
+
 	main_uart8_pins_default: main-uart8-pins-default {
 		pinctrl-single,pins = <
 			J721S2_IOPAD(0x040, PIN_INPUT, 14) /* (AC28) MCASP0_AXR0.UART8_CTSn */
 			J721S2_IOPAD(0x044, PIN_OUTPUT, 14) /* (Y26) MCASP0_AXR1.UART8_RTSn */
 			J721S2_IOPAD(0x0d0, PIN_INPUT, 11) /* (AF26) SPI0_CS1.UART8_RXD */
 			J721S2_IOPAD(0x0d4, PIN_OUTPUT, 11) /* (AH27) SPI0_CLK.UART8_TXD */
+		>;
+	};
+
+	main_uart5_pins_default: main-uart5-pins-default {
+		pinctrl-single,pins = <
+			J721S2_IOPAD(0x008, PIN_INPUT, 11) /* (AC24) MCAN12_RX.UART5_RXD */
+			J721S2_IOPAD(0x004, PIN_OUTPUT, 11) /* (W25) MCAN12_TX.UART5_TXD */
 		>;
 	};
 
@@ -259,7 +273,10 @@
 };
 
 &main_uart3 {
-	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&main_uart3_pins_default>;
+	/* Shared with TFA on this platform */
+	power-domains = <&k3_pds 352 TI_SCI_PD_SHARED>;
 };
 
 &main_uart4 {
@@ -267,7 +284,10 @@
 };
 
 &main_uart5 {
-	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&main_uart5_pins_default>;
+	/* Shared with TFA on this platform */
+	power-domains = <&k3_pds 354 TI_SCI_PD_SHARED>;
 };
 
 &main_uart6 {

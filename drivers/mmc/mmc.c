@@ -7,6 +7,9 @@
  * Based vaguely on the Linux code
  */
 
+#define DEBUG 1
+#define LOG_DEBUG 1
+
 #include <config.h>
 #include <common.h>
 #include <blk.h>
@@ -192,7 +195,7 @@ static int mmc_select_mode(struct mmc *mmc, enum bus_mode mode)
 	mmc->selected_mode = mode;
 	mmc->tran_speed = mmc_mode2freq(mmc, mode);
 	mmc->ddr_mode = mmc_is_mode_ddr(mode);
-	pr_debug("selecting mode %s (freq : %d MHz)\n", mmc_mode_name(mode),
+	debug("selecting mode %s (freq : %d MHz)\n", mmc_mode_name(mode),
 		 mmc->tran_speed / 1000000);
 	return 0;
 }
@@ -488,7 +491,7 @@ ulong mmc_bread(struct blk_desc *block_dev, lbaint_t start, lbaint_t blkcnt,
 	}
 
 	if (mmc_set_blocklen(mmc, mmc->read_bl_len)) {
-		pr_debug("%s: Failed to set blocklen\n", __func__);
+		debug("%s: Failed to set blocklen\n", __func__);
 		return 0;
 	}
 
@@ -497,7 +500,7 @@ ulong mmc_bread(struct blk_desc *block_dev, lbaint_t start, lbaint_t blkcnt,
 	do {
 		cur = (blocks_todo > b_max) ? b_max : blocks_todo;
 		if (mmc_read_blocks(mmc, dst, start, cur) != cur) {
-			pr_debug("%s: Failed to read blocks\n", __func__);
+			debug("%s: Failed to read blocks\n", __func__);
 			return 0;
 		}
 		blocks_todo -= cur;
@@ -843,7 +846,7 @@ static int __mmc_switch(struct mmc *mmc, u8 set, u8 index, u8 value,
 		ret = mmc_send_status(mmc, &status);
 
 		if (!ret && (status & MMC_STATUS_SWITCH_ERROR)) {
-			pr_debug("switch failed %d/%d/0x%x !\n", set, index,
+			debug("switch failed %d/%d/0x%x !\n", set, index,
 				 value);
 			return -EIO;
 		}
@@ -1546,7 +1549,7 @@ static int sd_read_ssr(struct mmc *mmc)
 			mmc->ssr.erase_offset = eo * 1000;
 		}
 	} else {
-		pr_debug("Invalid Allocation Unit Size.\n");
+		debug("Invalid Allocation Unit Size.\n");
 	}
 
 	return 0;
@@ -1659,18 +1662,18 @@ void mmc_dump_capabilities(const char *text, uint caps)
 {
 	enum bus_mode mode;
 
-	pr_debug("%s: widths [", text);
+	debug("%s: widths [", text);
 	if (caps & MMC_MODE_8BIT)
-		pr_debug("8, ");
+		debug("8, ");
 	if (caps & MMC_MODE_4BIT)
-		pr_debug("4, ");
+		debug("4, ");
 	if (caps & MMC_MODE_1BIT)
-		pr_debug("1, ");
-	pr_debug("\b\b] modes [");
+		debug("1, ");
+	debug("\b\b] modes [");
 	for (mode = MMC_LEGACY; mode < MMC_MODES_END; mode++)
 		if (MMC_CAP(mode) & caps)
-			pr_debug("%s, ", mmc_mode_name(mode));
-	pr_debug("\b\b]\n");
+			debug("%s, ", mmc_mode_name(mode));
+	debug("\b\b]\n");
 }
 #endif
 
@@ -1704,7 +1707,7 @@ static int mmc_set_signal_voltage(struct mmc *mmc, uint signal_voltage)
 	mmc->signal_voltage = signal_voltage;
 	err = mmc_set_ios(mmc);
 	if (err)
-		pr_debug("unable to set voltage (err %d)\n", err);
+		debug("unable to set voltage (err %d)\n", err);
 
 	return err;
 }
@@ -1800,21 +1803,25 @@ static int sd_select_mode_and_width(struct mmc *mmc, uint card_caps)
 
 		for (w = widths; w < widths + ARRAY_SIZE(widths); w++) {
 			if (*w & caps & mwt->widths) {
-				pr_debug("trying mode %s width %d (at %d MHz)\n",
+				debug("trying mode %s width %d (at %d MHz)\n",
 					 mmc_mode_name(mwt->mode),
 					 bus_width(*w),
 					 mmc_mode2freq(mmc, mwt->mode) / 1000000);
 
 				/* configure the bus width (card + host) */
 				err = sd_select_bus_width(mmc, bus_width(*w));
-				if (err)
+				if (err) {
+					debug("Failed in selecting bus width\n");
 					goto error;
+				}
 				mmc_set_bus_width(mmc, bus_width(*w));
 
 				/* configure the bus mode (card) */
 				err = sd_set_card_speed(mmc, mwt->mode);
-				if (err)
+				if (err) {
+					debug("Failed in setting card speed\n");
 					goto error;
+				}
 
 				/* configure the bus mode (host) */
 				mmc_select_mode(mmc, mwt->mode);
@@ -1827,7 +1834,7 @@ static int sd_select_mode_and_width(struct mmc *mmc, uint card_caps)
 					err = mmc_execute_tuning(mmc,
 								 mwt->tuning);
 					if (err) {
-						pr_debug("tuning failed\n");
+						debug("tuning failed\n");
 						goto error;
 					}
 				}
@@ -2120,7 +2127,7 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 		return 0;
 
 	if (!mmc->ext_csd) {
-		pr_debug("No ext_csd found!\n"); /* this should enver happen */
+		debug("No ext_csd found!\n"); /* this should enver happen */
 		return -ENOTSUPP;
 	}
 
@@ -2143,23 +2150,30 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 	for_each_mmc_mode_by_pref(card_caps, mwt) {
 		for_each_supported_width(card_caps & mwt->widths,
 					 mmc_is_mode_ddr(mwt->mode), ecbw) {
+			if (bus_width(ecbw->cap) == 8) {
+				continue;
+			}
 			enum mmc_voltage old_voltage;
-			pr_debug("trying mode %s width %d (at %d MHz)\n",
+			debug("trying mode %s width %d (at %d MHz)\n",
 				 mmc_mode_name(mwt->mode),
 				 bus_width(ecbw->cap),
 				 mmc_mode2freq(mmc, mwt->mode) / 1000000);
 			old_voltage = mmc->signal_voltage;
 			err = mmc_set_lowest_voltage(mmc, mwt->mode,
 						     MMC_ALL_SIGNAL_VOLTAGE);
-			if (err)
+			if (err) {
+				debug("Failed to set voltage\n");
 				continue;
+			}
 
 			/* configure the bus width (card + host) */
 			err = mmc_switch(mmc, EXT_CSD_CMD_SET_NORMAL,
 				    EXT_CSD_BUS_WIDTH,
 				    ecbw->ext_csd_bits & ~EXT_CSD_DDR_FLAG);
-			if (err)
+			if (err) {
+				debug("Failed to config bus width\n");
 				goto error;
+			}
 			mmc_set_bus_width(mmc, bus_width(ecbw->cap));
 
 			if (mwt->mode == MMC_HS_400) {
@@ -2178,8 +2192,10 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 			} else {
 				/* configure the bus speed (card) */
 				err = mmc_set_card_speed(mmc, mwt->mode, false);
-				if (err)
+				if (err) {
+					debug("Failed to config bus speed on card\n");
 					goto error;
+				}
 
 				/*
 				 * configure the bus width AND the ddr mode
@@ -2191,8 +2207,10 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 							 EXT_CSD_CMD_SET_NORMAL,
 							 EXT_CSD_BUS_WIDTH,
 							 ecbw->ext_csd_bits);
-					if (err)
+					if (err) {
+						debug("Failed to set card bus width and ddr mode\n");
 						goto error;
+					}
 				}
 
 				/* configure the bus mode (host) */
@@ -2206,7 +2224,7 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 					err = mmc_execute_tuning(mmc,
 								 mwt->tuning);
 					if (err) {
-						pr_debug("tuning failed : %d\n", err);
+						debug("tuning failed : %d\n", err);
 						goto error;
 					}
 				}
@@ -2217,6 +2235,8 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 			err = mmc_read_and_compare_ext_csd(mmc);
 			if (!err)
 				return 0;
+
+			debug("Test transfer failed\n");
 error:
 			mmc_set_signal_voltage(mmc, old_voltage);
 			/* if an error occurred, revert to a safer bus mode */
@@ -2712,12 +2732,12 @@ static int mmc_power_init(struct mmc *mmc)
 	ret = device_get_supply_regulator(mmc->dev, "vmmc-supply",
 					  &mmc->vmmc_supply);
 	if (ret)
-		pr_debug("%s: No vmmc supply\n", mmc->dev->name);
+		debug("%s: No vmmc supply\n", mmc->dev->name);
 
 	ret = device_get_supply_regulator(mmc->dev, "vqmmc-supply",
 					  &mmc->vqmmc_supply);
 	if (ret)
-		pr_debug("%s: No vqmmc supply\n", mmc->dev->name);
+		debug("%s: No vqmmc supply\n", mmc->dev->name);
 #endif
 #else /* !CONFIG_DM_MMC */
 	/*
@@ -2773,7 +2793,7 @@ static int mmc_power_off(struct mmc *mmc)
 		int ret = regulator_set_enable(mmc->vmmc_supply, false);
 
 		if (ret && ret != -EACCES) {
-			pr_debug("Error disabling VMMC supply : %d\n", ret);
+			debug("Error disabling VMMC supply : %d\n", ret);
 			return ret;
 		}
 	}
@@ -2826,7 +2846,7 @@ int mmc_get_op_cond(struct mmc *mmc, bool quiet)
 		 * to use the UHS modes, because we wouldn't be able to
 		 * recover from an error during the UHS initialization.
 		 */
-		pr_debug("Unable to do a full power cycle. Disabling the UHS modes for safety\n");
+		debug("Unable to do a full power cycle. Disabling the UHS modes for safety\n");
 		uhs_en = false;
 		mmc->host_caps &= ~UHS_CAPS;
 		err = mmc_power_on(mmc);

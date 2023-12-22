@@ -14,7 +14,7 @@
 	aliases {
 		serial0 = &wkup_uart0;
 		serial1 = &mcu_uart0;
-		serial2 = &main_uart8;
+		serial2 = &main_uart5;
 		i2c0 = &wkup_i2c0;
 		i2c1 = &mcu_i2c0;
 		i2c2 = &mcu_i2c1;
@@ -95,7 +95,15 @@
 	bootph-pre-ram;
 };
 
+&main_uart3_pins_default {
+	bootph-pre-ram;
+};
+
 &main_uart8_pins_default {
+	bootph-pre-ram;
+};
+
+&main_uart5_pins_default {
 	bootph-pre-ram;
 };
 
@@ -123,7 +131,15 @@
 	bootph-pre-ram;
 };
 
+&main_uart3 {
+	bootph-pre-ram;
+};
+
 &main_uart8 {
+	bootph-pre-ram;
+};
+
+&main_uart5 {
 	bootph-pre-ram;
 };
 
