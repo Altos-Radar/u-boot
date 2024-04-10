@@ -13,10 +13,16 @@
 #include <mapmem.h>
 #include <errno.h>
 #include <dfu.h>
+#include <command.h>
 
 static int dfu_transfer_medium_ram(enum dfu_op op, struct dfu_entity *dfu,
 				   u64 offset, void *buf, long *len)
 {
+#ifndef CONFIG_SPL_BUILD
+	if (dfu->layout == DFU_SCRIPT)
+		return run_command_list(buf, *len, 0);
+#endif
+
 	if (dfu->layout != DFU_RAM_ADDR) {
 		pr_err("unsupported layout: %s\n", dfu_get_layout(dfu->layout));
 		return  -EINVAL;
@@ -64,7 +70,11 @@ int dfu_fill_entity_ram(struct dfu_entity *dfu, char *devstr, char **argv, int a
 	}
 
 	dfu->dev_type = DFU_DEV_RAM;
-	if (strcmp(argv[0], "ram")) {
+	if (strcmp(argv[0], "ram")
+#ifndef CONFIG_SPL_BUILD
+		&& strcmp(argv[0], "script")
+#endif
+		) {
 		pr_err("unsupported device: %s\n", argv[0]);
 		return -ENODEV;
 	}
