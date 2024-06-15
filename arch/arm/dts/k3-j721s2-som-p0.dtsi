@@ -189,6 +189,12 @@
 				  "CANUART_MUX2_SEL0", "CANUART_MUX_SEL1",
 				  "GPIO_RGMII1_RST", "GPIO_eDP_ENABLE",
 				   "GPIO_LIN_EN", "CAN_STB";
+        P05-hog {
+			gpio-hog;
+			gpios = <5 GPIO_ACTIVE_HIGH>;
+			output-high;
+			line-name = "GPIO_eDP_ENABLE";
+		};
 	};
 };
 
