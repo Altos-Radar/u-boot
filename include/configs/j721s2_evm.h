@@ -23,6 +23,8 @@
 #define CFG_SYS_UBOOT_BASE		0x50080000
 #endif
 
+#define CFG_ENV_FLAGS_LIST_STATIC "boot_partition:sw,upgrade_available:bw,ustate:dw,bootcount:dw"
+
 /* Now for the remaining common defines */
 #include <configs/ti_armv7_common.h>
 
