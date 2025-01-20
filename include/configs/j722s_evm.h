@@ -11,4 +11,6 @@
 /* Now for the remaining common defines */
 #include <configs/ti_armv7_common.h>
 
+#define CFG_ENV_FLAGS_LIST_STATIC "boot_partition:sw,upgrade_available:bw,ustate:dw,bootcount:dw"
+
 #endif /* __CONFIG_J722S_EVM_H */
