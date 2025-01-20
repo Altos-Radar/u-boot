@@ -20,7 +20,7 @@
 
 	aliases {
 		serial0 = &wkup_uart0;
-		serial2 = &main_uart0;
+		serial2 = &main_uart5;
 		mmc0 = &sdhci0;
 		mmc1 = &sdhci1;
 		usb0 = &usb0;
@@ -28,13 +28,13 @@
 	};
 
 	chosen {
-		stdout-path = &main_uart0;
+		stdout-path = &main_uart5;
 	};
 
 	memory@80000000 {
-		/* 8G RAM */
+		/* 4G RAM */
 		reg = <0x00000000 0x80000000 0x00000000 0x80000000>,
-		      <0x00000008 0x80000000 0x00000001 0x80000000>;
+		      <0x00000008 0x80000000 0x00000000 0x80000000>;
 		device_type = "memory";
 		bootph-all;
 	};
@@ -198,10 +198,10 @@
 		bootph-all;
 	};
 
-	main_uart0_pins_default: main-uart0-default-pins {
+	main_uart5_pins_default: main-uart5-default-pins {
 		pinctrl-single,pins = <
-			J722S_IOPAD(0x01c8, PIN_INPUT, 0)	/* (A22) UART0_RXD */
-			J722S_IOPAD(0x01cc, PIN_OUTPUT, 0)	/* (B22) UART0_TXD */
+			J722S_IOPAD(0x01d8, PIN_INPUT, 0)	/* (D22) UART5_RXD */
+			J722S_IOPAD(0x01dc, PIN_OUTPUT, 0)	/* (C22) UART5_TXD */
 		>;
 		bootph-all;
 	};
@@ -306,9 +306,9 @@
 	status = "okay";
 };
 
-&main_uart0 {
+&main_uart5 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&main_uart0_pins_default>;
+	pinctrl-0 = <&main_uart5_pins_default>;
 	status = "okay";
 	bootph-all;
 };
