@@ -8,7 +8,7 @@
 
 / {
 	chosen {
-		stdout-path = "serial2:115200n8";
+		stdout-path = &main_uart5;
 		tick-timer = &main_timer0;
 	};
 };
@@ -60,6 +60,10 @@
 };
 
 &usb0_phy_ctrl {
+	bootph-pre-ram;
+};
+
+&main_uart5 {
 	bootph-pre-ram;
 };
 

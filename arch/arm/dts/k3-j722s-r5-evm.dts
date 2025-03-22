@@ -18,6 +18,10 @@
 		serial2 = &main_uart5;
 	};
 
+	chosen {
+		stdout-path = &main_uart5;
+	};
+
 	a53_0: a53@0 {
 		compatible = "ti,am654-rproc";
 		reg = <0x00 0x00a90000 0x00 0x10>;
