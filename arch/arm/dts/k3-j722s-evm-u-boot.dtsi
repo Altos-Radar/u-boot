@@ -8,7 +8,7 @@
 
 / {
 	chosen {
-		stdout-path = "serial2:115200n8";
+		stdout-path = &main_uart5;
 		tick-timer = &main_timer0;
 	};
 };

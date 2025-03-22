@@ -26,7 +26,7 @@
 	};
 
 	chosen {
-		stdout-path = &main_uart0;
+		stdout-path = &main_uart5;
 	};
 
 	memory@80000000 {
@@ -307,9 +307,10 @@
 
 	main_uart5_pins_default: main-uart5-default-pins {
 		pinctrl-single,pins = <
-			J722S_IOPAD(0x0108, PIN_INPUT, 3)       /* (J27) UART5_RXD */
-			J722S_IOPAD(0x010c, PIN_OUTPUT, 3)      /* (H27) UART5_TXD */
+			J722S_IOPAD(0x01d8, PIN_INPUT, 1)       /* (D22) UART5_RXD */
+			J722S_IOPAD(0x01dc, PIN_OUTPUT, 1)      /* (C22) UART5_TXD */
 		>;
+		bootph-all;
 	};
 
 	vdd_sd_dv_pins_default: vdd-sd-dv-default-pins {
@@ -476,7 +477,7 @@
 &main_uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&main_uart0_pins_default>;
-	status = "okay";
+	status = "disabled";
 	bootph-all;
 };
 
@@ -484,7 +485,8 @@
 	/* MAIN UART 5 is used by System firmware */
 	pinctrl-names = "default";
 	pinctrl-0 = <&main_uart5_pins_default>;
-	status = "reserved";
+	status = "okay";
+	bootph-all;
 };
 
 &mcu_pmx0 {
