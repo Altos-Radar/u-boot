@@ -250,107 +250,107 @@ sec-cfg:
             size: 69
         otp_entry:
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
+                host_id: 11
+                host_perms: 2
             -
-                host_id: 0
-                host_perms: 0
-        write_host_id: 0
+                host_id: 11
+                host_perms: 2
+        write_host_id: 11
     dkek_config:
         subhdr:
             magic: 0x5170
             size: 12
-        allowed_hosts: [128, 0, 0, 0]
+        allowed_hosts: [11, 0, 0, 0]
         allow_dkek_export_tisci: 0x5A
         rsvd: [0, 0, 0]
     sa2ul_cfg:
