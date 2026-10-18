@@ -11,6 +11,7 @@
 #include <dm.h>
 #include <dm/uclass-internal.h>
 #include <dm/pinctrl.h>
+#include <i2c.h>
 
 #include "../sysfw-loader.h"
 #include "../common.h"
@@ -164,6 +165,27 @@ static void k3_mem_init(void)
 	}
 }
 
+static void correct_vcore(void)
+{
+	int rc;
+	struct udevice *bus;
+	struct udevice *dev;
+
+	rc = uclass_get_device_by_seq(UCLASS_I2C, 0, &bus);
+	if (rc)
+		return;
+
+	rc = dm_i2c_set_bus_speed(bus, I2C_SPEED_FAST_PLUS_RATE);
+	if (rc)
+		return;
+
+	rc = i2c_get_chip(bus, 0x44, 1, &dev);
+	if (rc)
+		return;
+
+	dm_i2c_reg_write(dev, 0, 0x5A);
+}
+
 static __maybe_unused void enable_mcu_esm_reset(void)
 {
 	/* Set CTRLMMR_MCU_RST_CTRL:MCU_ESM_ERROR_RST_EN_Z  to '0' (low active) */
@@ -179,6 +201,7 @@ void board_init_f(ulong dummy)
 	struct udevice *dev;
 
 	k3_spl_init();
+	correct_vcore();
 	k3_mem_init();
 	spl_enable_cache();
 	setup_qos();
